@@ -7,7 +7,7 @@ import sys
 #     print(i, "ttttttestttt")
 # sys.exit()
 
-# theta should be degree? np.cos/sin(radian) -> theta = np.deg2rad(theta_deg)
+# theta is radian
 # coor from points, min_dis points set
 # new_x new_y for current 
 def rotation(coor, theta): # theta = "COUNTER"ClockW;
@@ -16,39 +16,39 @@ def rotation(coor, theta): # theta = "COUNTER"ClockW;
     return (new_x,new_y)
 
 
-# g for origin point, l for length, w for width, n for 4 corner points
+# g for central point coor, l for length, w for width, n for 4 corner points
 def all_points(g, l, w, theta): # x+ (axis) is from rear to front of the vehicle
     points = []
     n = [g[0] + l / 2, g[1] + w / 2]
-    # points on upper boundary, from right to left? step = -0.2? lose point?
+    # points on upper boundary, from right to left
+    # lose point?
     for i in np.arange(n[0],n[0]-l-0.1,-0.2):
         points.append([round(i,2), n[1]])
     n = [g[0] - l / 2, g[1] + w / 2]
-    # points on left boundary, from top to bottom? step = -0.2? lose point?
+    # points on left boundary, from top to bottom
     for j in np.arange(n[1],n[1]-w-0.1,-0.2):
         points.append([n[0], round(j,2)])
+    # points on bottom boundary, from left to right
     n = [g[0] - l / 2, g[1] - w / 2]
     for i in np.arange(n[0],n[0]+l+0.1,0.2):
         points.append([round(i,2), n[1]])
+    # points on right boundary, from bottom to top
     n = [g[0] + l / 2, g[1] - w / 2]
     for j in np.arange(n[1],n[1]+w+0.1,0.2):
         points.append([n[0], round(j,2)])
-    # point in points doesn't change
-    # for i in points:
-    #     i = rotation(i, theta)
     points = [rotation(p, theta) for p in points]
     return points
     
 
-# already set step, maybe also use in g[0] g[1]? g[0] += v * np.cos(theta)*step
-def movement(g, v, w, a, theta, step): # central point movement
+# central point movement
+def movement(g, v, w, a, theta, step): 
     g[0] += v * np.cos(theta)*step
     g[1] += v * np.sin(theta)*step
     v += a * step
     theta += w*step
     return g, v, theta
 
-# found min_distance and points 
+# return min_distance and points 
 def min_dis(points1, points2):
     distance = float("inf") # float max value
     min_p1 = []
@@ -62,6 +62,7 @@ def min_dis(points1, points2):
                 min_p2 = j
     return distance, min_p1, min_p2
 
+# alpha is the relative angle of min_distance and x-axis
 def relative_speed(p1,p2,v1,v2,theta1, theta2, alpha): # alpha as the input is the min distance angle of the last time. Used when p1=p2
     # consider np.arctan2(dy,dx)？
     if p2[1]-p1[1] != 0:
