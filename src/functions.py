@@ -1,6 +1,6 @@
 import numpy as np
 import math
-import sys
+# import sys
 
 # print(round(1.100001,2), 'test')
 # for i in np.arange(2,-0.1,-0.4):
@@ -14,7 +14,6 @@ def rotation(coor, theta): # theta = "COUNTER"ClockW;
     new_x = coor[0] * np.cos(theta) - coor[1] * np.sin(theta)
     new_y = coor[0] * np.sin(theta) + coor[1] * np.cos(theta)
     return (new_x,new_y)
-
 
 # g for central point coor, l for length, w for width, n for 4 corner points
 def all_points(g, l, w, theta): # x+ (axis) is from rear to front of the vehicle
@@ -39,7 +38,6 @@ def all_points(g, l, w, theta): # x+ (axis) is from rear to front of the vehicle
     points = [rotation(p, theta) for p in points]
     return points
     
-
 # central point movement
 def movement(g, v, w, a, theta, step): 
     g[0] += v * np.cos(theta)*step
@@ -88,12 +86,12 @@ def relative_speed(p1,p2,v1,v2,theta1, theta2, alpha): # alpha as the input is t
 # PDF Example: suppose X ~ Uniform(-1,1), Y ~ Uniform(-1,1)
 # PS: for each sample in n, derive one dm_n value so the simulation above should be within another loop for N in range(n)
 # n, v1, v2 and a should be derived from Chattanooga data
-n = 100000000 # sample size
-v1 = np.random.uniform(-1, 1, n)
-v2 = np.random.uniform(-1, 1, n)
-a = np.random.uniform(-1, 1, n)
+# n = 100000000 # sample size
+# v1 = np.random.uniform(-1, 1, n)
+# v2 = np.random.uniform(-1, 1, n)
+# a = np.random.uniform(-1, 1, n)
 
 
-dm_n = np.sqrt(v1**2 + v2**2 + a)
-k, section = np.histogram(dm_n, bins=100, density=True)
-section_center = (section[:-1] + section[1:]) / 2
+# dm_n = np.sqrt(v1**2 + v2**2 + a)
+# k, section = np.histogram(dm_n, bins=100, density=True)
+# section_center = (section[:-1] + section[1:]) / 2

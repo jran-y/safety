@@ -14,7 +14,7 @@ class VehicleState:
 
 def init_scence():
     vehicle1 = VehicleState(
-        g = np.array([0.0, 0.0], float),
+        g = np.array([6.0, 0.0], float),
         v = 6.0,
         a = 0.0,
         w = 0.0,
@@ -24,9 +24,9 @@ def init_scence():
     )
 
     vehicle2 = VehicleState(
-        g = np.array([8.0, 1.0], float),
+        g = np.array([0.0, 0.0], float),
         v = 6.0,
-        a = 0.0,
+        a = 1.0,
         w = 0.0,
         theta = math.radians(0),
         length = 4.5,
