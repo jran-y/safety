@@ -69,7 +69,7 @@ def relative_speed(p1,p2,v1,v2,theta1, theta2, alpha): # alpha as the input is t
         alpha = np.arctan((p2[0]-p1[0])/(p2[1]-p1[1]))
     # min_dis relative speed
     delta_speed = v1 * np.cos(theta1 - alpha) - v2 * np.cos(theta2 - alpha)
-    return delta_speed
+    return delta_speed, alpha
 
 #---- in main.py (better to be another file in pycharm) ----------
 # Step 0: find P_1 and P_2 as (0,0) and (min_distance, 0). find g1 and g2 accordingly.
