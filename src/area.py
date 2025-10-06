@@ -2,6 +2,8 @@ import math
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from pyproj import Transformer
+import contextily as cx
 
 # ========= Config =========
 CSV_PATH = ["safety/src/Aug-6th-noon.csv", "safety/src/Aug-13th-noon.csv"]
@@ -158,3 +160,54 @@ plt.close()
 
 print(f"Center (lat, lon): {center_lat:.7f}, {center_lon:.7f}")
 print(f"\nSaved figure: {OUT_IMG}")
+
+# ========= Basemap version (EPSG:3857) =========
+to3857 = Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
+to4326 = Transformer.from_crs("EPSG:3857", "EPSG:4326", always_xy=True)
+
+X, Y = to3857.transform(lons, lats)
+
+pts3857 = list(zip(X, Y))
+hull_3857 = convex_hull(pts3857)
+xmin_m, xmax_m = float(np.min(X)), float(np.max(X))
+ymin_m, ymax_m = float(np.min(Y)), float(np.max(Y))
+
+cx_m, cy_m = polygon_centroid(hull_3857) if len(hull_3857) >= 3 else (float(np.mean(X)), float(np.mean(Y)))
+center_lat_3857, center_lon_3857 = to4326.transform(cx_m, cy_m)
+
+fig, ax = plt.subplots(figsize=(7.6, 7.6))
+ax.scatter(X, Y, s=POINT_SIZE, alpha=0.6, label="Points")
+
+rx = [xmin_m, xmax_m, xmax_m, xmin_m, xmin_m]
+ry = [ymin_m, ymin_m, ymax_m, ymax_m, ymin_m]
+ax.plot(rx, ry, lw=2, label="Bounding Box")
+
+if len(hull_3857) >= 3:
+    hx = [p[0] for p in hull_3857] + [hull_3857[0][0]]
+    hy = [p[1] for p in hull_3857] + [hull_3857[0][1]]
+    ax.plot(hx, hy, lw=3, label="Convex Hull")
+
+ax.scatter([cx_m], [cy_m], marker=CENTER_MARKER, s=CENTER_SIZE, color=CENTER_COLOR,
+           label="Center: Hull Centroid")
+ax.text(cx_m + 6, cy_m + 6,
+        f"Center (lat, lon)\n{center_lat_3857:.7f}, {center_lon_3857:.7f}",
+        color=CENTER_COLOR, fontsize=9, ha="left", va="bottom",
+        bbox=dict(boxstyle="round,pad=0.25", fc="white", ec=CENTER_COLOR, lw=0.8, alpha=0.9))
+
+pad = 15.0
+ax.set_xlim(xmin_m - pad, xmax_m + pad)
+ax.set_ylim(ymin_m - pad, ymax_m + pad)
+
+cx.add_basemap(ax, source=cx.providers.Esri.WorldImagery, crs="EPSG:3857")
+
+ax.set_aspect("equal", adjustable="box")
+ax.set_xlabel("X (Web Mercator, meters)")
+ax.set_ylabel("Y (Web Mercator, meters)")
+ax.set_title("Vehicle Coverage (with Satellite Basemap)")
+ax.legend(loc="best")
+plt.tight_layout()
+plt.savefig("area_satellite.png", dpi=250)
+plt.close()
+
+print("Saved figure with basemap: area_satellite.png")
+
